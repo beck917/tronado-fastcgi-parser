@@ -38,7 +38,7 @@ class PHPFPMCheck(ZTCCheck):
             fcgi = fcgi_client.FCGIApp(host = self.fcgi_host,
                                        port = self.fcgi_port)
             env = {
-               'SCRIPT_FILENAME': url,
+               'SCRIPT_FILENAME': '/var/www/ping.php',
                'QUERY_STRING': '',
                'REQUEST_METHOD': 'GET',
                'SCRIPT_NAME': url,
@@ -49,9 +49,8 @@ class PHPFPMCheck(ZTCCheck):
                'CONTENT_TYPE': '',
                'CONTENT_LENGTH': '0',
                'DOCUMENT_URI': url,
-               'DOCUMENT_ROOT': '/',
-               'DOCUMENT_ROOT': '/var/www/',
-               #'SERVER_PROTOCOL' : ???
+               'DOCUMENT_ROOT': '/var/www',
+               'SERVER_PROTOCOL' : 'HTTP/1.1',
                'REMOTE_ADDR': '127.0.0.1',
                'REMOTE_PORT': '123',
                'SERVER_ADDR': self.fcgi_host,
@@ -67,8 +66,14 @@ class PHPFPMCheck(ZTCCheck):
     def ping(self):
         """ calls php-fpm ping resource """
         st = time.time()
-        code, headers, out, err = self._load_page('/ping')
+        code, headers, out, err = self._load_page('/ping.php')
+        print code
+        print err
+        print out
+        print time.time() - st
         if code.startswith('200') and out == 'pong':
+            print out
+            print time.time() - st
             return time.time() - st
         else:
             self.logger.error('ping: got response, but not correct')
