@@ -48,7 +48,7 @@ class PHPFPMCheck(ZTCCheck):
                'REDIRECT_STATUS': '200',
                'CONTENT_TYPE': '',
                'CONTENT_LENGTH': '0',
-               'DOCUMENT_URI': url,
+               #'DOCUMENT_URI': url,
                'DOCUMENT_ROOT': '/',
                'DOCUMENT_ROOT': '/var/www/',
                #'SERVER_PROTOCOL' : ???

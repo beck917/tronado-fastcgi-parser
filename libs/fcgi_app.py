@@ -258,7 +258,7 @@ class Record(object):
 
 class FCGIApp(object):
     def __init__(self, command=None, connect=None, host=None, port=None,
-                 filterEnviron=True):
+                 filterEnviron=False):
         if host is not None:
             assert port is not None
             connect=(host, port)
@@ -275,7 +275,7 @@ class FCGIApp(object):
         #print self._fcgiGetValues(sock, ['FCGI_MAX_CONNS', 'FCGI_MAX_REQS', 'FCGI_MPXS_CONNS'])
         #sock.close()
         
-    def __call__(self, environ, start_response):
+    def __call__(self, environ, start_response=None):
         # For sanity's sake, we don't care about FCGI_MPXS_CONN
         # (connection multiplexing). For every request, we obtain a new
         # transport socket, perform the request, then discard the socket.
@@ -304,9 +304,10 @@ class FCGIApp(object):
 
         # Transfer wsgi.input to FCGI_STDIN
         content_length = int(environ.get('CONTENT_LENGTH') or 0)
+        s = ''
         while True:
             chunk_size = min(content_length, 4096)
-            s = environ['wsgi.input'].read(chunk_size)
+            #s = environ['wsgi.input'].read(chunk_size)
             content_length -= len(s)
             rec = Record(FCGI_STDIN, requestId)
             rec.contentData = s
@@ -322,6 +323,7 @@ class FCGIApp(object):
         # Main loop. Process FCGI_STDOUT, FCGI_STDERR, FCGI_END_REQUEST
         # records from the application.
         result = []
+        err = ''
         while True:
             inrec = Record()
             inrec.read(sock)
@@ -334,6 +336,7 @@ class FCGIApp(object):
                     pass
             elif inrec.type == FCGI_STDERR:
                 # Simply forward to wsgi.errors
+                err += inrec.contentData
                 environ['wsgi.errors'].write(inrec.contentData)
             elif inrec.type == FCGI_END_REQUEST:
                 # TODO: Process appStatus/protocolStatus fields?
@@ -380,8 +383,8 @@ class FCGIApp(object):
         result = result[pos:]
 
         # Set WSGI status, headers, and return result.
-        start_response(status, headers)
-        return [result]
+        #start_response(status, headers)
+        return status, headers, result, err
 
     def _getConnection(self):
         if self._connect is not None:

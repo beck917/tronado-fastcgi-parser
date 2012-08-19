@@ -111,7 +111,7 @@ class ZTCCheck(object):
                   help="Temp direcroty path")
         parser.add_option("-l", "--logfile",
                   action="store", type="str", dest="logfile",
-                  default="/var/log/zabbix/ztc.log")
+                  default="/var/logs/ztc.log")
         parser.add_option("-c", "--confdir",
                   action="store", type="str", dest="confdir", default="/etc/ztc/",
                   help="ZTC Config dir")
