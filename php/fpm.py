@@ -50,10 +50,9 @@ class PHPFPM():
             ret = fcgi(env)
             return ret
         except:
-            self.logger.exception('fastcgi load failed')
             return '500', [], '', ''
 
-    def ping(self):
+    def get(self):
         """ calls php-fpm ping resource """
         st = time.time()
         code, headers, out, err = self._load_page('/ping.php')
@@ -64,6 +63,6 @@ class PHPFPM():
         if code.startswith('200') and out == 'pong':
             print out
             print time.time() - st
-            return time.time() - st
+            return out
         else:
-            return 0            
+            return 0

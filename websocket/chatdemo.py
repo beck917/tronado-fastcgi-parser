@@ -27,7 +27,11 @@ import tornado.websocket
 import os.path
 import uuid
 
+import sys
+sys.path.append("../")
+
 from tornado.options import define, options
+from php.fpm import PHPFPM
 
 define("port", default=8888, help="run on the given port", type=int)
 
@@ -85,9 +89,14 @@ class ChatSocketHandler(tornado.websocket.WebSocketHandler):
     def on_message(self, message):
         logging.info("got message %r", message)
         parsed = tornado.escape.json_decode(message)
+        
+        #php-fpm
+        fpm = PHPFPM()
+        
         chat = {
             "id": str(uuid.uuid4()),
             "body": parsed["body"],
+            "php":fpm.get()
             }
         chat["html"] = self.render_string("message.html", message=chat)
 

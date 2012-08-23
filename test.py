@@ -13,7 +13,7 @@ if __name__ == "__main__":
     
     fpm = PHPFPM()
     print fpm
-    tmp = fpm.ping()
+    tmp = fpm.get()
     print tmp
     
     print "Hello World"
